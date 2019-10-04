@@ -208,6 +208,9 @@ void Screen::display_face(int face){
   else if (face == 0x00){
     happy_face();
   }
+  else {
+    sleepy_face();
+  }
 }
 
 void Screen::display_temp(int temp[]){
@@ -315,7 +318,7 @@ void Screen::eight_bit_eye(int x, int y){
     
     
 void Screen::eight_bit_face(){
-	//clear_face();
+	clear_face();
 	int cheek_color[] = {15,0,0};
 	int mouth_color[] = {12,0,15};
 	eight_bit_eye(10,5);
@@ -326,7 +329,7 @@ void Screen::eight_bit_face(){
 }
     
 void Screen::happy_face(){
-	//clear_face();
+	clear_face();
 	int eye_color[] = {3,0,15};
 	int mouth_color[] = {3,0,15};
 	int cheek_color[] = {12,0,15};
@@ -340,6 +343,7 @@ void Screen::happy_face(){
 }
     
 void Screen::sleepy_face(){
+  clear_face();
   int eye_color[] = {3,0,15};
   int mouth_color[] = {3,0,15};
   int cheek_color[] = {12,0,15};
@@ -366,7 +370,6 @@ void Screen::update_screen(int message[]){
 
     display_temp(temp);
     display_currents(drive,steer);
-    //display_face(message[FACE_POS]);
-    //happy_face();
+    display_face(message[FACE_POS]);
   }
 }
