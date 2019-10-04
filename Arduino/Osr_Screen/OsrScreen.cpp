@@ -24,7 +24,7 @@ void Screen::init_display()
 	display_status(0xFF);
 	display_temp(temp);
 	display_currents(drive,steer);
-	sleepy_face();
+	display_face(0x00);
 	
 	RGBmatrixPanel::begin();
 	Serial.flush();
@@ -211,6 +211,7 @@ void Screen::display_face(int face){
   else {
     sleepy_face();
   }
+  previous_face = face;
 }
 
 void Screen::display_temp(int temp[]){
@@ -318,7 +319,6 @@ void Screen::eight_bit_eye(int x, int y){
     
     
 void Screen::eight_bit_face(){
-	clear_face();
 	int cheek_color[] = {15,0,0};
 	int mouth_color[] = {12,0,15};
 	eight_bit_eye(10,5);
@@ -329,7 +329,6 @@ void Screen::eight_bit_face(){
 }
     
 void Screen::happy_face(){
-	clear_face();
 	int eye_color[] = {3,0,15};
 	int mouth_color[] = {3,0,15};
 	int cheek_color[] = {12,0,15};
@@ -343,7 +342,6 @@ void Screen::happy_face(){
 }
     
 void Screen::sleepy_face(){
-  clear_face();
   int eye_color[] = {3,0,15};
   int mouth_color[] = {3,0,15};
   int cheek_color[] = {12,0,15};
@@ -370,6 +368,9 @@ void Screen::update_screen(int message[]){
 
     display_temp(temp);
     display_currents(drive,steer);
-    display_face(message[FACE_POS]);
+    if (message[FACE_POS] != previous_face) {
+      clear_face();
+      display_face(message[FACE_POS]);
+    }
   }
 }

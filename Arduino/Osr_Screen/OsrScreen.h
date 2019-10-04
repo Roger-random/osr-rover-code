@@ -53,6 +53,8 @@ class Screen: public RGBmatrixPanel {
     int DEBUG[2]         	= {0,8};
     int STATE[2]          	= {1,1};
 
+  int previous_face;
+
 public:
     
     unsigned long time;
