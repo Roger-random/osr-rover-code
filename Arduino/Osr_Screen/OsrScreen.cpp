@@ -353,24 +353,34 @@ void Screen::sleepy_face(){
 }
     
 void Screen::clear_face(){
-  RGBmatrixPanel::fillRect(0,2,31,15,RGBmatrixPanel::Color444(BLACK));
+  RGBmatrixPanel::fillRect(0,0,31,15,RGBmatrixPanel::Color444(BLACK));
 }
     
 void Screen::update_screen(int message[]){
+
+  // Prefer having dedicated flag, but using high bit of face for now.
+  // If moved elsewhere, need to modify if(face changed) below as well.
+  int show_status = 0x80 & message[FACE_POS];
+
   if ((preamble_check(message) && chksum_check(message)) || TEST_MODE){
-    connected_status(message[CONNECTED_POS]);
-    display_status(message[STATUS_POS]);
-    display_battery(message[BATTERY_POS]);
-
-    int temp[]  = {(message[5] & 0x0F),(message[6] & 0xF0) >> 4,(message[6] & 0x0F),(message[7] & 0xF0) >> 4,(message[7] & 0x0F)};
-    int drive[] = {(message[8] & 0xF0) >> 4,(message[8] & 0x0F),(message[9] & 0xF0) >> 4,(message[9] & 0x0F),(message[10] & 0xF0) >> 4,(message[10] & 0x0F)};
-    int steer[] = {(message[11] & 0xF0) >> 4,(message[11] & 0x0F),(message[12] & 0xF0) >> 4,(message[12] & 0x0F),(message[13] & 0xF0) >> 4,(message[13] & 0x0F)};
-
-    display_temp(temp);
-    display_currents(drive,steer);
     if (message[FACE_POS] != previous_face) {
+      // Also clears if face index unchanged but display_status changes
+      // Will need to modify if() statement if display status gets its
+      // own dedicated flag.
       clear_face();
       display_face(message[FACE_POS]);
+    }
+    if (show_status) {
+      connected_status(message[CONNECTED_POS]);
+      display_status(message[STATUS_POS]);
+      display_battery(message[BATTERY_POS]);
+
+      int temp[]  = {(message[5] & 0x0F),(message[6] & 0xF0) >> 4,(message[6] & 0x0F),(message[7] & 0xF0) >> 4,(message[7] & 0x0F)};
+      int drive[] = {(message[8] & 0xF0) >> 4,(message[8] & 0x0F),(message[9] & 0xF0) >> 4,(message[9] & 0x0F),(message[10] & 0xF0) >> 4,(message[10] & 0x0F)};
+      int steer[] = {(message[11] & 0xF0) >> 4,(message[11] & 0x0F),(message[12] & 0xF0) >> 4,(message[12] & 0x0F),(message[13] & 0xF0) >> 4,(message[13] & 0x0F)};
+
+      display_temp(temp);
+      display_currents(drive,steer);
     }
   }
 }
