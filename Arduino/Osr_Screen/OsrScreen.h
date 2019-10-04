@@ -1,7 +1,7 @@
 #ifndef OsrScreen
 #define OsrScreen
 
-#include "../RGB_matrix_Panel/RGBmatrixPanel.h"
+#include "RGBmatrixPanel.h"
 
 
 #define BIT_MAX  				15
@@ -92,7 +92,3 @@ public:
 
 };
 #endif
-
-
-
-

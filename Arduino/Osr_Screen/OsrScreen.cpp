@@ -1,7 +1,7 @@
 #include "OsrScreen.h"
 
 #include "Arduino.h"
-#include "../RGB_matrix_Panel/RGBmatrixPanel.h"
+#include "RGBmatrixPanel.h"
 
 
 

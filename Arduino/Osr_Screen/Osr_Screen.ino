@@ -9,7 +9,7 @@
 
 #include <RGBmatrixPanel.h>
 //#include "screen_test.h"
-#include <OsrScreen.h>
+#include "OsrScreen.h"
 
 Screen screen(1);
 int c = 0;
