@@ -12,6 +12,47 @@ global counter
 mode,counter = 0,0
 last = time.time()
 
+'''
+Given an array of floating point numbers, interpret the element at index zero
+as X axis and index one as Y axis. If axis movement is beyond a threshold,
+interpret axis position to be one of eight directions. Return direction or,
+if neither axis is beyond threshold, return 0.
+
+	    [1]+
+
+	     8
+	  7     1
+[0]+	6    0    2    [0]-
+	  5     3
+	     4
+
+	    [1]-
+'''
+def translate_pad(dpad_xy):
+	threshold = 0.75
+	x = dpad_xy[0]
+	y = dpad_xy[1]
+
+	if x > threshold:
+		if y > threshold:
+			return 7
+		elif y < -threshold:
+			return 5
+		return 6
+	elif x < -threshold:
+		if y > threshold:
+			return 1
+		elif y < -threshold:
+			return 3
+		return 2
+	else:
+		if y > threshold:
+			return 8
+		elif y < -threshold:
+			return 4
+		else:
+			return 0
+
 def callback(data):
 	global mode
 	global counter
@@ -31,7 +72,7 @@ def callback(data):
 	if 1 in dpad: mode = dpad.index(1)
 	now = time.time()
 
-	led_msg.data = [mode,1]
+	led_msg.data = [translate_pad(data.axes[6:]),1]
 	if now - last > 0.75:
 		counter +=1
 	else:
