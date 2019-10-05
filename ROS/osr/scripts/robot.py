@@ -105,7 +105,7 @@ class Robot():
 			v5 = int(v)                            # Fastest wheel
 			v6 = int((v*math.sqrt(b + c))/rmax_float)
 
-			if (left-right-switch):
+			if (self.switch_sides):
 				if (r > 0):
 					velocity = [v1,v2,v3,v4,v5,v6]
 				else:
@@ -144,7 +144,7 @@ class Robot():
 			elif angles[i] >  45: angles[i] =  43
 
 
-		if (left-right-switch):
+		if (self.switch_sides):
 			if radius > 0:
 				return [ang3,-ang4,-ang1,ang2]
 			else:
