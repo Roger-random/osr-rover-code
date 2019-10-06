@@ -9,7 +9,7 @@ from osr_msgs.msg import Led
 from std_msgs.msg import Int64MultiArray
 import math
 
-# Once we react to a direction, we wait for finger release before 
+# Once we react to a direction, we wait for finger release before
 # processing more commands
 global center_wait
 center_wait = False
@@ -22,7 +22,7 @@ display_status = False
 # and we're using highest bit for status display toggle, so we can have up to
 # 127 faces.
 global face_index
-face_index = 0
+face_index = 1
 
 # Direction pad is typicall digital (-1, 0, 1) but reported as a floating
 # point number. In case an analog d-pad is used, compare against threshold.
