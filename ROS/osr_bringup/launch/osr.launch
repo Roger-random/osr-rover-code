@@ -7,6 +7,7 @@
 
 	
 	<node name="joystick" 		pkg="osr" 			type="joystick.py" 		respawn="true"/>
+	<node name="dpad_face"		pkg="osr"			type="dpad_face.py"		respawn="true"/>
 	<node name="rover" 			pkg="osr" 			type="rover.py" 		respawn="true" />
 	<node name="led_screen" 	pkg="led_screen" 	type="arduino_comm.py" 	respawn="true" />
 	<node respawn="false" pkg="joy"

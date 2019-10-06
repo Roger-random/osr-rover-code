@@ -52,9 +52,11 @@ def status_callback(data):
 	error_status = data.error_status
 	temp = data.temp
 	current = data.current
-	connected = int(rospy.get_param("remote_control/connected"))
 
-	send_screen_message()
+	if face & 0x80:
+		# Only send message if we're displaying status LEDs
+		connected = int(rospy.get_param("remote_control/connected"))
+		send_screen_message()
 
 '''
 When the face changes, update screen along with latest 'connected'.
@@ -64,6 +66,7 @@ def led_cmds_callback(data):
 	global connected
 
 	if have_received_status and data.data[0] != face:
+		# Only send message if we have status AND face has changed
 		face = data.data[0]
 		connected = int(rospy.get_param("remote_control/connected"))
 		send_screen_message()

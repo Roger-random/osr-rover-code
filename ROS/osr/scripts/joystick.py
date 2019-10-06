@@ -12,53 +12,11 @@ global counter
 mode,counter = 0,0
 last = time.time()
 
-'''
-Given an array of floating point numbers, interpret the element at index zero
-as X axis and index one as Y axis. If axis movement is beyond a threshold,
-interpret axis position to be one of eight directions. Return direction or,
-if neither axis is beyond threshold, return 0.
-
-	    [1]+
-
-	     8
-	  7     1
-[0]+	6    0    2    [0]-
-	  5     3
-	     4
-
-	    [1]-
-'''
-def translate_pad(dpad_xy):
-	threshold = 0.75
-	x = dpad_xy[0]
-	y = dpad_xy[1]
-
-	if x > threshold:
-		if y > threshold:
-			return 7
-		elif y < -threshold:
-			return 5
-		return 6
-	elif x < -threshold:
-		if y > threshold:
-			return 1
-		elif y < -threshold:
-			return 3
-		return 2
-	else:
-		if y > threshold:
-			return 8
-		elif y < -threshold:
-			return 4
-		else:
-			return 0
-
 def callback(data):
 	global mode
 	global counter
 	global last
 
-	led_msg = Int64MultiArray()
 	joy_out = Joystick()
 
 	y =  data.axes[1]
@@ -72,11 +30,6 @@ def callback(data):
 	if 1 in dpad: mode = dpad.index(1)
 	now = time.time()
 
-	face_selection = translate_pad(data.axes[6:])
-	if data.buttons[6]: # 'back' button
-		face_selection = face_selection | 0x80 # superimpose status on face
-
-	led_msg.data = [face_selection,1]
 	if now - last > 0.75:
 		counter +=1
 	else:
@@ -87,8 +40,6 @@ def callback(data):
 		rospy.set_param("remote_control/connected",1)
 	rospy.set_param("face/value",mode)
 	last = time.time()
-	led_pub.publish(led_msg)
-	
 	
 	cmd = two_joy(x1,y,rt)
 	joy_out = Joystick()
@@ -121,6 +72,5 @@ if __name__ == '__main__':
 
 	sub = rospy.Subscriber("/joy", Joy, callback)
 	pub = rospy.Publisher('joystick', Joystick, queue_size=1)
-	led_pub = rospy.Publisher('led_cmds', Int64MultiArray, queue_size=1)
 
 	rospy.spin()
