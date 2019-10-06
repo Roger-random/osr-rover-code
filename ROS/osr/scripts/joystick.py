@@ -72,7 +72,11 @@ def callback(data):
 	if 1 in dpad: mode = dpad.index(1)
 	now = time.time()
 
-	led_msg.data = [translate_pad(data.axes[6:]),1]
+	face_selection = translate_pad(data.axes[6:])
+	if data.buttons[6]: # 'back' button
+		face_selection = face_selection | 0x80 # superimpose status on face
+
+	led_msg.data = [face_selection,1]
 	if now - last > 0.75:
 		counter +=1
 	else:
