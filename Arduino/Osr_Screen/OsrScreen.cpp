@@ -208,6 +208,12 @@ void Screen::display_face(int face){
   else if (face == 0x00){
     happy_face();
   }
+  else if (face == 0x02){
+    palette_bitmap->draw_bitmap(1,this);
+  }
+  else if (face == 0x03){
+    palette_bitmap->draw_bitmap(0,this);
+  }
   else {
     sleepy_face();
   }
@@ -353,7 +359,7 @@ void Screen::sleepy_face(){
 }
     
 void Screen::clear_face(){
-  RGBmatrixPanel::fillRect(0,0,31,15,RGBmatrixPanel::Color444(BLACK));
+  RGBmatrixPanel::fillScreen(0x00);
 }
     
 void Screen::update_screen(int message[]){

@@ -2,7 +2,7 @@
 #define OsrScreen
 
 #include "RGBmatrixPanel.h"
-
+#include "PaletteBitmap.h"
 
 #define BIT_MAX  				15
 #define RED 					BIT_MAX,0,0
@@ -54,6 +54,8 @@ class Screen: public RGBmatrixPanel {
     int STATE[2]          	= {1,1};
 
   int previous_face;
+
+  PaletteBitmap *palette_bitmap = new PaletteBitmap(false);
 
 public:
     

@@ -14,18 +14,34 @@
 Screen screen(1);
 int c = 0;
 int* data = 0;
+
+unsigned long last_update;
+unsigned long hold_duration = 500;
+int face = 0;
+
 void setup() 
 {
   Serial.begin(9600);
   screen.init_display();
+  last_update = millis();
 }
 
 void loop() 
 {
-
+/*
   data = screen.get_data();
   if (data){
     screen.update_screen(data);
   }
   data = 0;
+*/
+  if (millis() > last_update + hold_duration) {
+    screen.clear_face();
+    screen.display_face(face++);
+    last_update = millis();
+
+    if (face > 4) {
+      face = 0;
+    }
+  }
 }
