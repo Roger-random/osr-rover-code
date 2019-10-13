@@ -14,6 +14,7 @@ And the 'roslibpy' library is used here to make the Python code easier.
 https://roslibpy.readthedocs.io
 """
 # Standard Python libraries
+import threading
 import time
 
 # Python library for connecting to ROS via ROS bridge suite WebSocket server
@@ -43,10 +44,19 @@ class ServoNeckGamepad:
   """
   def __init__(self):
     """
-    Class constructor sets up an instance of roslibpy to use
+    Class constructor
     """
+    # ROS bridge
     progress("Creating client for {0}:{1}".format(ROS_MASTER, ROS_BRIDGE_PORT))
     self.ros_client = roslibpy.Ros(host=ROS_MASTER, port=ROS_BRIDGE_PORT)
+
+    # Control access to Adafruit servo library to ensure only one thread is
+    # communicatng over I2C at any given time.
+    self.mutex = threading.Lock()
+
+    # Flags to control path of execution
+    self.wait_for_release = False
+    self.motion_complete = True
 
   def run(self):
     """
@@ -73,16 +83,74 @@ class ServoNeckGamepad:
     """
     When ROS connection is ready, subscribe to /joy topic
     """
-    topicJoy = roslibpy.Topic(self.ros_client, '/joy', 'sensor_msgs/Joy')
+    topicJoy = roslibpy.Topic(self.ros_client, '/joy', 'sensor_msgs/Joy', throttle_rate=50, queue_length=1)
     topicJoy.subscribe(self.joystick_callback)
 
   def joystick_callback(self, message):
     """
     When a /joy topic message arrives, examine buttons state given in
     message['buttons'] to determine action
-    Reference: http://docs.ros.org/kinetic/api/sensor_msgs/html/msg/Joy.html
+    Reference: http://wiki.ros.org/joy
+               http://docs.ros.org/kinetic/api/sensor_msgs/html/msg/Joy.html
     """
-    progress("/joy buttons: {1} @ {0}".format(time.time(),message['buttons']))
+    if self.motion_complete:
+      A,B,X,Y = message['buttons'][0:4]
+      if self.wait_for_release:
+        if [A,B,X,Y] == [0,0,0,0]:
+          self.wait_for_release = False
+      else:
+        if A == 1:
+          self.motion_start()
+          self.ros_client.call_in_thread(self.motion_shake)
+        elif X == 1:
+          self.motion_start()
+          self.ros_client.call_in_thread(self.motion_huh)
+        elif Y == 1:
+          self.motion_start()
+          self.ros_client.call_in_thread(self.motion_nod)
+
+  def motion_start(self):
+    """
+    Call this before launching another thread for actual motion
+    """
+    self.motion_complete = False
+    self.wait_for_release = True
+
+  def motion_end(self):
+    """
+    Call this from motion method to signal completion
+    """
+    self.motion_complete = True
+
+  def motion_nod(self):
+    """
+    Nod head "yes"
+    """
+    with self.mutex:
+      print("Nodding start")
+      time.sleep(3)
+      print("Nodding done")
+      self.motion_end()
+
+  def motion_shake(self):
+    """
+    Shake head "no"
+    """
+    with self.mutex:
+      print("Shaking")
+      time.sleep(3)
+      print("Shaking done")
+      self.motion_end()
+
+  def motion_huh(self):
+    """
+    Tilt head puzzled "huh"
+    """
+    with self.mutex:
+      print("Puzzled")
+      time.sleep(3)
+      print("Puzzled done")
+      self.motion_end()
 
 if __name__ == "__main__":
   sng = ServoNeckGamepad()
